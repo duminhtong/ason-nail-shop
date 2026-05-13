@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-urbanist);
+  --font-mono: var(--font-space);
+  --font-heading: var(--font-fraunces);
   
   /* Stitch Colors */
   --color-surface-container: #211f24;
@@ -111,132 +111,37 @@
 }
 
 :root {
-  --background: #141218;
+  --background: #0A0A0C;
   --foreground: #e6e0e9;
-  --card: #211f24;
-  --card-foreground: #e6e0e9;
-  --popover: #211f24;
-  --popover-foreground: #e6e0e9;
   --primary: #cfbcff;
-  --primary-foreground: #381e72;
-  --secondary: #cdc0e9;
-  --secondary-foreground: #342b4b;
-  --muted: #36343a;
-  --muted-foreground: #cbc4d2;
-  --accent: #4d4465;
-  --accent-foreground: #bfb2da;
-  --destructive: #ffb4ab;
-  --destructive-foreground: #690005;
-  --border: #494551;
-  --input: #494551;
-  --ring: #cfbcff;
-  --chart-1: #cfbcff;
-  --chart-2: #cdc0e9;
-  --chart-3: #e7c365;
-  --chart-4: #6750a4;
-  --chart-5: #ffdf93;
-  --radius: 0.5rem;
-  --sidebar: #1d1b20;
-  --sidebar-foreground: #e6e0e9;
-  --sidebar-primary: #cfbcff;
-  --sidebar-primary-foreground: #381e72;
-  --sidebar-accent: #36343a;
-  --sidebar-accent-foreground: #e6e0e9;
-  --sidebar-border: #494551;
-  --sidebar-ring: #cfbcff;
-}
-
-.dark {
-  --background: #141218;
-  --foreground: #e6e0e9;
-  --card: #211f24;
-  --card-foreground: #e6e0e9;
-  --popover: #211f24;
-  --popover-foreground: #e6e0e9;
-  --primary: #cfbcff;
-  --primary-foreground: #381e72;
-  --secondary: #cdc0e9;
-  --secondary-foreground: #342b4b;
-  --muted: #36343a;
-  --muted-foreground: #cbc4d2;
-  --accent: #4d4465;
-  --accent-foreground: #bfb2da;
-  --destructive: #ffb4ab;
-  --destructive-foreground: #690005;
-  --border: #494551;
-  --input: #494551;
-  --ring: #cfbcff;
-  --chart-1: #cfbcff;
-  --chart-2: #cdc0e9;
-  --chart-3: #e7c365;
-  --chart-4: #6750a4;
-  --chart-5: #ffdf93;
-  --sidebar: #1d1b20;
-  --sidebar-foreground: #e6e0e9;
-  --sidebar-primary: #cfbcff;
-  --sidebar-primary-foreground: #381e72;
-  --sidebar-accent: #36343a;
-  --sidebar-accent-foreground: #e6e0e9;
-  --sidebar-border: #494551;
-  --sidebar-ring: #cfbcff;
+  --urbanist: var(--font-urbanist);
+  --fraunces: var(--font-fraunces);
+  --space: var(--font-space);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-urbanist);
+    letter-spacing: -0.01em;
   }
-  html {
-    @apply font-sans;
+  h1, h2, h3, h4, .font-h1, .font-h2 {
+    font-family: var(--font-fraunces);
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
-  .font-h1, .font-h2, .font-h3, .font-display-xl, .font-body-lg, .font-body-md, .font-button, .font-label-caps { 
-    font-family: "Inter", sans-serif; 
-  }
-  .text-h1 { font-size: 48px; line-height: 1.2; letter-spacing: -0.02em; font-weight: 700; }
-  .text-h2 { font-size: 32px; line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; }
-  .text-h3 { font-size: 24px; line-height: 1.4; font-weight: 600; }
-  .text-display-xl { font-size: 72px; line-height: 1.1; letter-spacing: -0.04em; font-weight: 800; }
-  .text-body-lg { font-size: 18px; line-height: 1.6; font-weight: 400; }
-  .text-body-md { font-size: 16px; line-height: 1.6; font-weight: 400; }
-  .text-button { font-size: 14px; line-height: 1; font-weight: 600; }
-  .text-label-caps { font-size: 12px; line-height: 1; letter-spacing: 0.15em; font-weight: 700; text-transform: uppercase; }
-
-  /* Mobile Responsive Utilities */
-  @media (max-width: 768px) {
-    :root {
-      --gutter: 16px;
-      --xl: 40px;
-      --xxl: 60px;
-    }
-    
-    .font-display-xl {
-      font-size: 40px !important;
-      line-height: 1.1 !important;
-    }
-    
-    .font-h1 {
-      font-size: 28px !important;
-    }
-  }
-
-  .pb-safe {
-    padding-bottom: calc(var(--md) + var(--safe-area-bottom));
-  }
-
+  .font-h1, .font-h2, .font-h3 { font-family: var(--font-fraunces); }
+  .font-body-lg, .font-body-md { font-family: var(--font-urbanist); }
+  .font-button, .font-label-caps { font-family: var(--font-space); }
+  
+  .text-h1 { font-size: clamp(32px, 8vw, 64px); line-height: 1.1; }
+  .text-h2 { font-size: clamp(24px, 5vw, 40px); line-height: 1.2; }
+  .text-body-lg { font-size: 18px; line-height: 1.7; }
+  
   .bg-vignette {
-    background: radial-gradient(circle at center, rgba(33, 31, 36, 0.4) 0%, #141218 100%);
-  }
-  .glow-button {
-    box-shadow: 0 0 15px rgba(207, 188, 255, 0.3);
-    transition: all 0.3s ease;
-  }
-  .glow-button:hover {
-    box-shadow: 0 0 25px rgba(207, 188, 255, 0.5);
-    transform: translateY(-2px);
+    background: radial-gradient(circle at center, rgba(33, 31, 36, 0.4) 0%, #0A0A0C 100%);
   }
 }
