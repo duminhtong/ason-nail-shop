@@ -19,13 +19,12 @@ export async function updateSiteConfig(formData: FormData) {
   return { success: true }
 }
 
-export async function signOut() {
+export async function signOut(formData: FormData) {
   const { createClient } = await import('@/utils/supabase/server')
   const { cookies } = await import('next/headers')
   const supabase = createClient(await cookies())
   await supabase.auth.signOut()
   revalidatePath('/login')
-  return { success: true }
 }
 
 export async function deleteLead(id: string) {
