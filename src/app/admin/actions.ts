@@ -16,7 +16,6 @@ export async function updateSiteConfig(formData: FormData) {
 
   revalidatePath('/')
   revalidatePath('/admin')
-  return { success: true }
 }
 
 export async function signOut(formData: FormData) {
@@ -30,5 +29,4 @@ export async function signOut(formData: FormData) {
 export async function deleteLead(id: string) {
   await supabase.from('Lead').delete().eq('id', id)
   revalidatePath('/admin')
-  return { success: true }
 }
