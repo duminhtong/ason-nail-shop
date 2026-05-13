@@ -7,24 +7,53 @@ export default function NewProductPage() {
     'use server'
     
     const name = formData.get('name') as string
-    const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+    const slug = name.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove accents
+      .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+      .replace(/[^a-z0-9 ]/g, '')
+      .replace(/\s+/g, '-')
+    
     const description = formData.get('description') as string
     const sellingPrice = parseInt(formData.get('sellingPrice') as string)
     const imageUrl = formData.get('imageUrl') as string
 
-    const { error } = await supabase.from('Product').insert({
-      name,
-      slug,
-      description,
-      sellingPrice,
-      images: [{ url: imageUrl, isMain: true }],
-      category: 'Nail Polish',
-      stock: 99
-    })
+    // 1. Insert into Product table
+    const { data: product, error: pError } = await supabase
+      .from('Product')
+      .insert({
+        name,
+        slug,
+        description,
+        sellingPrice,
+        costPrice: 0,
+        profitMargin: 0,
+        isActive: true,
+        isNew: true
+      })
+      .select()
+      .single()
 
-    if (!error) {
-      redirect('/admin/products')
+    if (pError) {
+      console.error('Product Error:', pError)
+      return
     }
+
+    // 2. Insert into ProductImage table
+    if (product && imageUrl) {
+      const { error: iError } = await supabase
+        .from('ProductImage')
+        .insert({
+          url: imageUrl,
+          productId: product.id,
+          isMain: true
+        })
+      
+      if (iError) {
+        console.error('Image Error:', iError)
+      }
+    }
+
+    redirect('/admin/products')
   }
 
   return (
@@ -41,27 +70,27 @@ export default function NewProductPage() {
         <form action={createProduct} className="space-y-6 bg-[#141218] border border-white/5 rounded-[32px] p-8 md:p-12 shadow-2xl">
           <div className="space-y-2">
             <label className="text-[11px] font-bold text-white/40 uppercase tracking-[2px] ml-1">Tên sản phẩm</label>
-            <input name="name" required className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:border-primary/50 outline-none transition-all text-white" placeholder="Ví dụ: ASon Midnight Purple" />
+            <input name="name" required className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:border-primary/50 outline-none transition-all text-white placeholder:text-white/10" placeholder="Ví dụ: Midnight Neon Purple" />
           </div>
 
           <div className="space-y-2">
             <label className="text-[11px] font-bold text-white/40 uppercase tracking-[2px] ml-1">Giá bán (VNĐ)</label>
-            <input name="sellingPrice" type="number" required className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:border-primary/50 outline-none transition-all text-white" placeholder="250000" />
+            <input name="sellingPrice" type="number" required className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:border-primary/50 outline-none transition-all text-white placeholder:text-white/10" placeholder="250000" />
           </div>
 
           <div className="space-y-2">
             <label className="text-[11px] font-bold text-white/40 uppercase tracking-[2px] ml-1">Ảnh sản phẩm (URL)</label>
-            <input name="imageUrl" required className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:border-primary/50 outline-none transition-all text-white" placeholder="https://..." />
+            <input name="imageUrl" required className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:border-primary/50 outline-none transition-all text-white placeholder:text-white/10" placeholder="Dán link ảnh tại đây..." />
           </div>
 
           <div className="space-y-2">
             <label className="text-[11px] font-bold text-white/40 uppercase tracking-[2px] ml-1">Mô tả</label>
-            <textarea name="description" rows={4} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:border-primary/50 outline-none transition-all text-white" placeholder="Mô tả về sản phẩm..." />
+            <textarea name="description" rows={4} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:border-primary/50 outline-none transition-all text-white placeholder:text-white/10" placeholder="Thông tin chi tiết về sản phẩm..." />
           </div>
 
           <button type="submit" className="w-full bg-primary text-black font-bold py-4 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_8px_32px_rgba(207,188,255,0.25)] flex items-center justify-center gap-3">
-            <span>TẠO SẢN PHẨM MỚI</span>
-            <span className="material-symbols-outlined">add_circle</span>
+            <span>XÁC NHẬN TẠO SẢN PHẨM</span>
+            <span className="material-symbols-outlined">check_circle</span>
           </button>
         </form>
       </div>
