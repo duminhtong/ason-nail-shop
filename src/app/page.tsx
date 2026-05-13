@@ -1,65 +1,86 @@
-import Image from "next/image";
+import Link from "next/link"
+import { getProducts, getSiteConfigs } from "@/lib/supabase-db"
 
-export default function Home() {
+// Force dynamic so we always show fresh data from Supabase
+export const dynamic = 'force-dynamic'
+
+export default async function Home() {
+  const [products, configs] = await Promise.all([
+    getProducts(8),
+    getSiteConfigs(["HERO_TITLE", "HERO_BUTTON", "HERO_IMAGE"]),
+  ])
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="pt-[80px] max-w-container-max mx-auto overflow-hidden">
+      {/* Hero Section */}
+      <section className="mt-md md:mt-xl px-gutter relative flex flex-col items-center justify-center text-center">
+        <h1 className="font-display-xl text-[40px] md:text-display-xl uppercase text-transparent bg-clip-text bg-gradient-to-r from-on-surface to-surface-variant z-10 mb-md relative">
+          {configs.HERO_TITLE}
+          {/* Neon Glow behind text */}
+          <div className="absolute inset-0 bg-primary/20 blur-[60px] -z-10 rounded-full"></div>
+        </h1>
+        <div className="w-full aspect-[4/5] md:aspect-[21/9] rounded-xl overflow-hidden relative border border-outline-variant shadow-[0_0_40px_rgba(207,188,255,0.15)]">
+          <img 
+            alt="Neon Chic Beauty Hero" 
+            className="w-full h-full object-cover object-center" 
+            src={configs.HERO_IMAGE}
+          />
+          <div className="absolute bottom-md md:bottom-lg left-1/2 -translate-x-1/2 w-full px-gutter max-w-[350px]">
+            <button className="w-full bg-primary text-background font-button text-button px-lg py-md md:py-sm rounded-full shadow-[0_0_20px_rgba(207,188,255,0.4)] hover:bg-surface-tint transition-all uppercase whitespace-nowrap glow-button">
+              {configs.HERO_BUTTON}
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Category Chips */}
+      <section className="mt-lg px-gutter">
+        <div className="flex overflow-x-auto gap-sm hide-scrollbar py-sm">
+          <button className="flex-shrink-0 px-md py-sm rounded-full font-label-caps text-label-caps border border-primary bg-primary/10 text-primary">ALL</button>
+          <button className="flex-shrink-0 px-md py-sm rounded-full font-label-caps text-label-caps border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-colors">NAILS</button>
+          <button className="flex-shrink-0 px-md py-sm rounded-full font-label-caps text-label-caps border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-colors">LIPS</button>
+          <button className="flex-shrink-0 px-md py-sm rounded-full font-label-caps text-label-caps border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-colors">EYES</button>
+          <button className="flex-shrink-0 px-md py-sm rounded-full font-label-caps text-label-caps border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-colors">SKIN</button>
         </div>
-      </main>
-    </div>
-  );
+      </section>
+
+      {/* Featured Products Grid */}
+      <section className="mt-lg mb-xxl px-gutter">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-md md:gap-lg">
+          {products.map((product) => {
+            const mainImage = product.images?.[0]?.url || "https://placehold.co/400x400/141218/cfbcff?text=No+Image"
+            
+            return (
+              <Link 
+                href={`/product/${product.slug}`} 
+                key={product.id}
+                className="flex flex-col group cursor-pointer bg-surface-container rounded-lg border border-outline-variant overflow-hidden hover:border-primary transition-colors duration-300 relative"
+              >
+                {product.isNew && (
+                  <div className="absolute top-xs right-xs z-10 px-sm py-xs rounded-full bg-primary/10 text-primary font-label-caps text-label-caps border border-primary/20 backdrop-blur-md">
+                    NEW
+                  </div>
+                )}
+                
+                <div className="aspect-square bg-surface-dim relative overflow-hidden flex items-center justify-center p-md">
+                  <img 
+                    alt={product.name} 
+                    className="w-full h-full object-contain mix-blend-screen group-hover:scale-105 transition-transform duration-500" 
+                    src={mainImage}
+                  />
+                </div>
+                
+                <div className="p-sm flex flex-col gap-xs bg-surface-container border-t border-outline-variant">
+                  <h3 className="font-button text-button text-on-surface truncate uppercase">{product.name}</h3>
+                  <div className="font-h3 text-h3 text-primary tracking-tight">
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.sellingPrice)}
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
+    </main>
+  )
 }
